@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Shared Worker 1</title>
+        <script src="./gen/j/sseSdk.js"></script>
+    </head>
+    <body>
+        <h1>Shared Worker 1</h1>
+        
+        <script>        
+
+            let sseURL='http://localhost:8010/stream',
+                withCredentials=false,
+                workerURL="./gen/j/sharedWorker.js";
+                
+            let sse=SSE(sseURL, workerURL, withCredentials);
+            console.log(sse);
+            sse.addEventListenerSse('sharedWorker1',function(e){
+                console.log(e);
+                console.log(e.data);                   
+                })
+                
+        </script>    
+    </body>    
+</html>

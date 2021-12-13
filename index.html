@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- <script src="./dist/j/sseSdk.js"></script> -->
+        <script src="./gen/j/sseSdk.js"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script src="./src/vendor/notify.min.js"></script>
+
+
+        <style>
+            #counter{
+                background-color: yellow;
+                width: 20em;
+                height: 10em;
+                float: left;
+                margin-left: 4em;
+                display: table;
+            }
+            #counter>span{
+                display: table-cell;
+                vertical-align: middle;
+                text-align: center;
+                font-size: 2em;
+            }
+
+
+        </style>    
+    </head>
+
+
+    <body>
+        <h1>Server Sent Events Demo</h1>
+        <a href="./sharedWorker_1.html" target="_blank">Shared Worker 1</a>
+        <a href="./sharedWorker_2.html" target="_blank">Shared Worker 2</a>
+
+        <div id="counter">
+            <span>Demo Counter</span>  
+        </div> 
+        
+        
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+                
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">SSE Header</h4>
+                    </div>
+                    <div class="modal-body">
+                    <p>SSE modal.</p>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                
+                </div>
+            </div>
+                
+        </div>
+
+        <script>    
+
+            // var sseURL='http://stream.test2.varun-kapoor-test2.cluster.infoedge.com/sse-service/v0-0-1-beta2/sseinfra/jobseeker'
+            //     withCredentials=true,
+            //     workerURL="./dist/j/sharedWorker.min.js";
+        
+            // var sse=SSE(sseURL, workerURL, withCredentials);
+            // //console.log(sse);
+        
+        
+            // sse.addEventListenerSse('recoJobs',function(e){
+            // //   console.log(e);
+            //     //Get the data from local storage, update the local storage        
+            // console.log(e);
+            // })
+            
+            function sseDemo(){
+                  //To get the counter from local storage
+                  localforage.getItem('counter', function (err, value) {
+                    //console.log(err);
+                    if(value && value.event && value.data){
+                        document.getElementById("counter").children[0].innerHTML=
+                        "Event Name: "+value.event+" Data: "+value.data; 
+                        // if err is non-null, we got an error. otherwise, value is the value
+                    }
+                   
+                });
+
+                let sseURL='http://localhost:8010/stream',
+                withCredentials=false,
+                workerURL="./gen/j/sharedWorker.js",
+                retryTimes=10, //no of times to retry to create SSE connection
+                reconnectTime=1000*2; //seconds
+                
+                let sse=SSE(sseURL, workerURL, withCredentials,retryTimes, reconnectTime);
+                console.log(sse);
+                
+                
+                //Custom events
+                sse.addEventListenerSse('counter',function(e){
+                    console.log(e);
+                    console.log(e.data);
+
+                    localforage.setItem('counter', e.data).then(function (value) {
+                        document.getElementById("counter").children[0].innerHTML=
+                        "Event Name: "+(e.event||e.type)+" Data: "+e.data;         
+                    
+                    }).catch(function(err) {
+                        console.error(err);
+                    });
+
+                     $.notify("Counter: "+e.data, {
+                        position:"top right",
+                        autoHideDelay: 12000,
+                        className: 'info',
+                    }); 
+                    //to close the SSE connection
+                    //sse.closeConnection();
+                })
+                
+               
+
+                sse.addEventListenerSse('pageAction',function(e){
+                    if(e.data=="openModal"){
+                        $('#myModal').modal('show');
+                    }
+                })
+                           
+
+                // sse.addEventListener('myEvent2',(e)=>{
+                // //console.log(e);
+                // console.log(e.data);
+                // })
+            }
+            sseDemo();
+            
+
+        </script>
+
+    </body>    
+
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "sse",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "prod": "webpack --config webpack/webpack.prod.js",
+    "dev": "webpack --config webpack/webpack.dev.js",
+    "watch": "webpack --progress --watch --config webpack/webpack.dev.js"
+  },
+  "dependencies": {
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "express": "^4.16.2",
+    "spdy": "^3.4.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "babel-loader": "^8.0.4",
+    "clean-webpack-plugin": "^0.1.19",
+    "event-source-polyfill": "^1.0.5",
+    "localforage": "^1.4.2",
+    "terser-webpack-plugin": "^1.2.1",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-merge": "^4.1.4"
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-syntax-dynamic-import"
+    ]
+  }
+}
